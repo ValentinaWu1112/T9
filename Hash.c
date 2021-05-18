@@ -3,17 +3,80 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include "Hash.h"
-#include "Link.h"
 
 #define M 101
+#define MAXSIZE 128
 
-//#define M 32749
-// Tamanho da tabela.
-// A tabela tab[0..M-1] apontará para as M listas de colisões.
 link tab[M];
-// Função de espalhamento: transforma uma chave não vazia v em um
-// número no intervalo 0..M-1.
-//
+
+tipoObjeto* criar (char *v, int occur){
+    tipoObjeto *obj;
+    obj = (tipoObjeto*)malloc(sizeof(tipoObjeto));
+    obj->valor = (char*)malloc(MAXSIZE*sizeof(char));
+    strcpy(obj->valor, v);
+    obj->ocorrencias=occur;
+    return obj;
+}
+
+link cria_lista(){
+    link aux;
+    aux=(link)malloc(sizeof(_STnode));
+    if(aux!=NULL){
+        aux->obj=NULL;
+        aux->next=NULL;
+    }
+    return aux;
+}
+
+void procura_link(link l, tipoObjeto *obj, link *ant, link *atual){
+    *ant=l;
+    *atual=l->next;
+
+    while((*atual)!=NULL && (*atual)->obj->ocorrencias>obj->ocorrencias){
+        *ant=*atual;
+        *atual = (*atual)->next;
+    }
+
+    if((*atual)!=NULL && (*atual)->obj->ocorrencias!=obj->ocorrencias){
+        *atual=NULL;
+    }
+}
+
+void insert (link l, tipoObjeto *o){
+    link no;
+    link ant,atual;
+    no=(link)malloc(sizeof(_STnode));
+    if(no!=NULL){
+        no->obj=o;
+        procura_link(l, o, &ant, &atual);
+        no->next=ant->next;
+        ant->next=no;
+    }
+}
+
+void procura_elimina(link l, tipoObjeto *obj, link *ant, link *atual){
+    *ant=l;
+    *atual=l->next;
+
+    while((*atual)!=NULL && strcmp((*atual)->obj->valor,obj->valor)!=0){
+        *ant=*atual;
+        *atual = (*atual)->next;
+    }
+
+    if((*atual)!=NULL && strcmp((*atual)->obj->valor,obj->valor)!=0){
+        *atual=NULL;
+    }
+}
+
+void elimina (link l, tipoObjeto *o){
+    link ant1;
+    link atual1;
+    procura_elimina(l,o,&ant1, &atual1);
+     if (atual1 != NULL) {
+        ant1->next = atual1->next;
+        free (atual1);
+    }
+}
 
 int codigo(char c){
     c = tolower(c);
@@ -42,59 +105,43 @@ int hash(char * v) {
     return result % M;
 }
 
-// Inicializa uma tabela que apontará as M listas de colisões.
-//
-void STinit() {
-  int h;
-  for (h = 0; h < M; h++)
-    tab[h] = inic();
-}
-// Se o objeto obj já está na tabela de símbolos, a função
-// insert incrementa o campo ocorrencias de obj. Senão,
-// obj é inserido e seu contador é inicializado com 1.
-//
-void STinsert(tipoObjeto obj) {
-  char *v = obj.valor;
-  int h = hash(v);
-  link t = tab[h];
-  for (t = tab[h]; t != NULL; t = t->next)
-    if (strcmp(t->obj.valor, v) == 0) break;
-
-  if (t != NULL){
-    elimina(t,obj);
-    obj.ocorrencias++;
-    insere(t,obj);
-  }
-  else {
-    obj.ocorrencias = 1;
-    insere(t,obj);
-  }
-
-  printf("%s %d -> %d\n", tab[h]->obj.valor, tab[h]->obj.ocorrencias, h);
-
+void STinit(){
+  for (int h = 0; h < M; h++)
+    tab[h] = NULL;
 }
 
-// A função search devolve um objeto obj que tenha chave v.
-// Se tal objeto não existe, a função devolve um objeto cuja
-// chave é a char * vazia (ou seja, chave[0] == '\0').
-//
-tipoObjeto STsearch(char * v) {
-  tipoObjeto objetonulo;
-  link t;
-  int h = hash(v);
-  for (t = tab[h]; t != NULL; t = t->next)
-    if (strcmp(t->obj.valor, v) == 0) break;
-  if (t != NULL) return t->obj;
-  objetonulo.valor = v;
-  objetonulo.ocorrencias = 0;
-  return objetonulo;
+void STinsert(tipoObjeto *obj){
+    char *v = obj->valor;
+    int h = hash(v);
+    link t = tab[h];
+    for(t=tab[h];t!=NULL; t=t->next)
+        if(strcmp(t->obj->valor,v)==0) break;
+
+    if(t!=NULL) t->obj->ocorrencias++;
+    else{
+        obj->ocorrencias=1;
+        link novo = malloc(sizeof(_STnode));
+        novo->obj=obj;
+        novo->next=tab[h];
+        tab[h]=novo;
+    }
+}
+
+tipoObjeto* STsearch(char *v){
+    link t;
+    int h = hash(v);
+    for(t=tab[h]; t!=NULL; t=t->next){
+        if(strcmp(t->obj->valor,v)==0) break;
+    }
+    if(t!=NULL) return t->obj;
+    tipoObjeto *objetonulo=criar(v,0);
+    return objetonulo;
 }
 
 void imprimir(int h){
-    int hashtmp = h % M;
-    printf("hash: %d\n", hashtmp);
+    int hashtmp = h%M;
     link t;
-    for (t = tab[hashtmp]; t != NULL; t = t->next){
-        printf("%s\n", t->obj.valor);
+    for(t=tab[hashtmp]; t!=NULL; t=t->next){
+        printf("%s %d\n", t->obj->valor, t->obj->ocorrencias);
     }
 }

@@ -12,13 +12,13 @@ int main (){
   STinit();
   char *str = (char*)malloc(MAXSIZE*sizeof(char));
   while(fgets(str, MAXSIZE, f) != NULL) {
+    str[strlen(str)-1]='\0';
     char *token;
     token = strtok(str, " ");
-    printf("%s\n",token);
     while(token != NULL) {
-      tipoObjeto t = STsearch(token);
-      printf("main: %s %d\n", t.valor, t.ocorrencias);
-      STinsert(t);
+        puts(token);
+      tipoObjeto *tmp = STsearch(token);
+      STinsert(tmp);
       token = strtok(NULL, " ");
     }
   }
