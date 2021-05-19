@@ -13,12 +13,13 @@ typedef struct STnode {
 }_STnode;
 
 tipoObjeto* criar (char *v, int oco);
+link create();
 int hash(char *v);
 void STinit();
 void STinsert(tipoObjeto *obj);
 tipoObjeto* STsearch(char *v);
 void imprimir(int h);
-link cria_lista();
 void insert (link l, tipoObjeto *obj);
+void elimina (link l, tipoObjeto *o);
 
 #endif // HASH_H_INCLUDED

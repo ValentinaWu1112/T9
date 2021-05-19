@@ -4,7 +4,7 @@
 #include <ctype.h>
 #include "Hash.h"
 
-#define M 101
+#define M 32749
 #define MAXSIZE 128
 
 link tab[M];
@@ -18,7 +18,7 @@ tipoObjeto* criar (char *v, int occur){
     return obj;
 }
 
-link cria_lista(){
+link create(){
     link aux;
     aux=(link)malloc(sizeof(_STnode));
     if(aux!=NULL){
@@ -107,30 +107,31 @@ int hash(char * v) {
 
 void STinit(){
   for (int h = 0; h < M; h++)
-    tab[h] = NULL;
+    tab[h] = create();
 }
 
 void STinsert(tipoObjeto *obj){
     char *v = obj->valor;
     int h = hash(v);
-    link t = tab[h];
-    for(t=tab[h];t!=NULL; t=t->next)
+    link t;
+    for(t=tab[h]->next;t!=NULL; t=t->next)
         if(strcmp(t->obj->valor,v)==0) break;
 
-    if(t!=NULL) t->obj->ocorrencias++;
+    if(t!=NULL){
+        elimina(tab[h],obj);
+        obj->ocorrencias++;
+        insert(tab[h],obj);
+    }
     else{
         obj->ocorrencias=1;
-        link novo = malloc(sizeof(_STnode));
-        novo->obj=obj;
-        novo->next=tab[h];
-        tab[h]=novo;
+        insert(tab[h],obj);
     }
 }
 
 tipoObjeto* STsearch(char *v){
     link t;
     int h = hash(v);
-    for(t=tab[h]; t!=NULL; t=t->next){
+    for(t=tab[h]->next; t!=NULL; t=t->next){
         if(strcmp(t->obj->valor,v)==0) break;
     }
     if(t!=NULL) return t->obj;
@@ -141,7 +142,7 @@ tipoObjeto* STsearch(char *v){
 void imprimir(int h){
     int hashtmp = h%M;
     link t;
-    for(t=tab[hashtmp]; t!=NULL; t=t->next){
+    for(t=tab[hashtmp]->next; t!=NULL; t=t->next){
         printf("%s %d\n", t->obj->valor, t->obj->ocorrencias);
     }
 }
