@@ -18,8 +18,9 @@ int hash(char *v);
 void STinit();
 void STinsert(tipoObjeto *obj);
 tipoObjeto* STsearch(char *v);
-void imprimir(int h);
+void imprimir(long long unsigned int h);
 void insert (link l, tipoObjeto *obj);
 void elimina (link l, tipoObjeto *o);
+void addPunct();
 
 #endif // HASH_H_INCLUDED
