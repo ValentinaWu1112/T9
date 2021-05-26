@@ -121,21 +121,28 @@ int codigo2(char *c){
 int pont (char *v){
   for(int i=0; i<strlen(v); i++){
     unsigned char c = v[i];
-    if(c>128) return i;
+    if(c<128) {
+      continue;
+    }
+    else{
+      return i;
+    }
   }
-  return 0;
+  return -1;
 }
 
 int completude (char *v){
   int p=pont(v);
-  if (p==0) return 5;
-  else if (p<=5) return 7;
+  if (p==-1) return 5;
+  else if (p<=5) return 6;
   else return 5;
 }
 
 int hash(char * v) {
     int n=strlen(v)-1;
     if(strlen(v)>6) n = completude(v);
+    if(n>=strlen(v)) n=strlen(v)-1;
+    //printf("tamanho n: %d\n", n);
     int j = 1;
     long unsigned int result = 0;
     for (int i = n; i >= 0; i--)
@@ -224,7 +231,7 @@ void addPunct(){
   tipoObjeto *e = criar("!",1);
   tipoObjeto *i = criar("?",1);
   tipoObjeto *d = criar(":",1);
-  tipoObjeto *i = criar("-",1);
+  tipoObjeto *ifen = criar("-",1);
 
   STinsert(v);
   STinsert(p);
@@ -232,6 +239,6 @@ void addPunct(){
   STinsert(e);
   STinsert(i);
   STinsert(d);
-  STinsert(i);
+  STinsert(ifen);
 
 }
