@@ -158,12 +158,6 @@ void button_clicked(GtkWidget *widget, gpointer data)
     }
 }
 
-void limpar(char *str){
-  for(int i=0; i<strlen(str); i++){
-    if(ispunct(str[i])) str[i]=' ';
-  }
-}
-
 int main(int argc, char *argv[]) {
     FILE *dic = fopen("dicionario.txt","r");
     if(dic!=NULL){
@@ -199,12 +193,12 @@ int main(int argc, char *argv[]) {
               continue;
           }
           str[strlen(str) - 1] = '\0';
-          limpar(str);
           char *token;
           token = strtok(str, " ");
           while (token != NULL)
           {
-              //puts(token);
+              if(ispunct(token[strlen(token)-1])) token[strlen(token)-1]='\0';
+              puts(token);
               tipoObjeto *tmp = STsearch(token);
               STinsert(tmp);
               token = strtok(NULL, " ");
