@@ -198,7 +198,7 @@ int main(int argc, char *argv[]) {
           while (token != NULL)
           {
               if(ispunct(token[strlen(token)-1])) token[strlen(token)-1]='\0';
-              puts(token);
+              //puts(token);
               tipoObjeto *tmp = STsearch(token);
               STinsert(tmp);
               token = strtok(NULL, " ");
